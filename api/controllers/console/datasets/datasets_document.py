@@ -4,8 +4,8 @@ from datetime import UTC, datetime
 from typing import cast
 
 from flask import request
-from flask_login import current_user  # type: ignore
-from flask_restful import Resource, fields, marshal, marshal_with, reqparse  # type: ignore
+from flask_login import current_user
+from flask_restful import Resource, fields, marshal, marshal_with, reqparse
 from sqlalchemy import asc, desc
 from werkzeug.exceptions import Forbidden, NotFound
 
@@ -40,7 +40,7 @@ from core.indexing_runner import IndexingRunner
 from core.model_manager import ModelManager
 from core.model_runtime.entities.model_entities import ModelType
 from core.model_runtime.errors.invoke import InvokeAuthorizationError
-from core.plugin.manager.exc import PluginDaemonClientSideError
+from core.plugin.impl.exc import PluginDaemonClientSideError
 from core.rag.extractor.entity.extract_setting import ExtractSetting
 from extensions.ext_database import db
 from extensions.ext_redis import redis_client
@@ -621,7 +621,7 @@ class DocumentDetailApi(DocumentResource):
             raise InvalidMetadataError(f"Invalid metadata value: {metadata}")
 
         if metadata == "only":
-            response = {"id": document.id, "doc_type": document.doc_type, "doc_metadata": document.doc_metadata}
+            response = {"id": document.id, "doc_type": document.doc_type, "doc_metadata": document.doc_metadata_details}
         elif metadata == "without":
             dataset_process_rules = DatasetService.get_process_rules(dataset_id)
             document_process_rules = document.dataset_process_rule.to_dict()
@@ -682,7 +682,7 @@ class DocumentDetailApi(DocumentResource):
                 "disabled_by": document.disabled_by,
                 "archived": document.archived,
                 "doc_type": document.doc_type,
-                "doc_metadata": document.doc_metadata,
+                "doc_metadata": document.doc_metadata_details,
                 "segment_count": document.segment_count,
                 "average_segment_length": document.average_segment_length,
                 "hit_count": document.hit_count,
